@@ -24,6 +24,7 @@ def fillEditorWindow(window):
 
 	canvas = tk.Canvas(window)
 	canvas.grid(row=0, column=0, columnspan=7)
+	canvas.config(width=700, height=700)
 
 	tk.Label(window, text="Line #:").grid(row=1, column=0)
 	lblLine = Utils.MakeArrowButtons(window, 1, 1, btnPrevLineClick, btnNextLineClick)
@@ -137,8 +138,8 @@ def updateData():
 	global lblLine, lblVertex1, lblVertex2
 	global Lines, CurrentLine
 	lblLine["text"] = str(CurrentLine)
-	lblVertex1["text"] = str(Lines[CurrentLine]["from"])
-	lblVertex2["text"] = str(Lines[CurrentLine]["to"])
+	lblVertex1["text"] = str(Lines[CurrentLine]["from"]) + " (" + str(Vertices[Lines[CurrentLine]["from"]]["name"]) + ")"
+	lblVertex2["text"] = str(Lines[CurrentLine]["to"]) + " (" + str(Vertices[Lines[CurrentLine]["to"]]["name"]) + ")"
 
 def updateImage():
 	global canvas, Vertices, ImageGlob, Lines, CurrentLine
@@ -151,7 +152,7 @@ def updateImage():
 		if len(images) > 0:
 			currentImage = images[0]
 
-	Utils.UpdateImage(canvas, Vertices, Lines, currentImage, noVertex, CurrentLine)
+	Utils.UpdateImage(canvas, 0, 0, Vertices, Lines, currentImage, noVertex, CurrentLine)
 
 def OpenFromFile(window, filename):
 	global FileName, CurrentLine, ImageGlob, Vertices, Lines, CurrentLine, Frames
@@ -167,6 +168,9 @@ def OpenFromFile(window, filename):
 	Vertices = data["vertices"]
 	Lines = data["lines"]
 	Frames = data["frames"]
+
+	if len(Lines) == 0:
+		Lines = [Utils.NewLine(Vertices)]
 
 	fillEditorWindow(window)
 

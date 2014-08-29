@@ -24,6 +24,7 @@ def fillEditorWindow(window):
 	canvas = tk.Canvas(window)
 	canvas.grid(row=0, column=0, columnspan=7)
 	canvas.bind("<ButtonPress-1>", canvasDown)
+	canvas.config(width=700, height=700)
 
 	tk.Entry(window, textvariable=ImageGlob).grid(row=1, column=0, columnspan=3)
 
@@ -39,9 +40,10 @@ def fillEditorWindow(window):
 
 	lblVertex = Utils.MakeArrowButtons(window, 3, 0, btnPrevVertexClick, btnNextVertexClick)
 
-	btnRemoveVertex = tk.Button(window, text="Remove vertex")
-	btnRemoveVertex.grid(row=4, column=0, columnspan=3)
-	btnRemoveVertex.bind("<ButtonRelease-1>", btnRemoveVertexClick)
+	if len(Lines) == 0 and len(Frames) == 0:
+		btnRemoveVertex = tk.Button(window, text="Remove vertex")
+		btnRemoveVertex.grid(row=4, column=0, columnspan=3)
+		btnRemoveVertex.bind("<ButtonRelease-1>", btnRemoveVertexClick)
 
 	btnAddVertex = tk.Button(window, text="Add vertex")
 	btnAddVertex.grid(row=5, column=0, columnspan=3)
@@ -121,7 +123,7 @@ def updateImage():
 
 	CurrentLine = -1
 
-	Utils.UpdateImage(canvas, Vertices, Lines, currentImage, CurrentVertex, CurrentLine)
+	Utils.UpdateImage(canvas, 0, 0, Vertices, Lines, currentImage, CurrentVertex, CurrentLine)
 
 
 def OpenFromFile(window, filename, newFile):
@@ -135,7 +137,7 @@ def OpenFromFile(window, filename, newFile):
 		data = {
 			"imageGlob" : "",
 			"vertices" : vertices,
-			"lines" : [Utils.NewLine(vertices)],
+			"lines" : [],
 			"frames" : []
 		}
 	else:

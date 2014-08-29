@@ -17,10 +17,11 @@ def MakeArrowButtons(window, row, col, leftHandler, rightHandler):
 
 	return lblVertex
 
-def UpdateImage(canvas, vertices, lines, currentImage, currentVertex, currentLine):
+def UpdateImage(canvas, originX, originY, vertices, lines, currentImage, currentVertex, currentLine):
 	if currentImage != None:
 		canvas.image = ImageTk.PhotoImage(Image.open(currentImage))
-		canvas.create_image(0, 0, image=canvas.image, anchor=tk.NW)
+		canvas.delete(tk.ALL)
+		canvas.create_image(-originX, -originY, image=canvas.image, anchor=tk.NW)
 
 	radius = 3
 	for c in range(len(vertices)):
@@ -29,7 +30,7 @@ def UpdateImage(canvas, vertices, lines, currentImage, currentVertex, currentLin
 		if c == currentVertex:
 			color = "red"
 
-		canvas.create_oval(v["x"] - radius, v["y"] - radius, v["x"] + radius, v["y"] + radius, fill=color)
+		canvas.create_oval(v["x"] - radius - originX, v["y"] - radius - originY, v["x"] + radius - originX, v["y"] + radius - originY, fill=color)
 
 	for c in range(len(lines)):
 		l = lines[c]
@@ -39,8 +40,8 @@ def UpdateImage(canvas, vertices, lines, currentImage, currentVertex, currentLin
 			width = 2
 
 		canvas.create_line(
-			vertices[lines[c]["from"]]["x"], vertices[lines[c]["from"]]["y"],
-			vertices[lines[c]["to"]]["x"], vertices[lines[c]["to"]]["y"],
+			vertices[lines[c]["from"]]["x"] - originX, vertices[lines[c]["from"]]["y"] - originY,
+			vertices[lines[c]["to"]]["x"] - originX, vertices[lines[c]["to"]]["y"] - originY,
 			fill=color, width=width)
 
 def Save(fileName, imageGlob, vertices, lines, frames):
@@ -62,7 +63,7 @@ def NewFrame(frames):
 	if len(frames) == 0:
 		# by default, any vertex not in the list of vertices has coordinates 
 		# that are equal to the base vertex at the same index
-		return {"vertices" : []}
+		return {"vertices" : [], "name" : ""}
 	return copy.deepcopy(frames[-1])
 
 

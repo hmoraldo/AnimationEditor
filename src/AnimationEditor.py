@@ -7,31 +7,40 @@ canvas = None
 lblImage = None
 lblVertex = None
 FileName = None
-CurrentFrame = None
+CurrentFrame = None # current frame number
 CurrentVertex = None
-Images = None # the image objects (as displayed by canvas)
+FrameName = None
+Images = None # the image names
 ImageGlob = None
 Vertices = None
 Lines = None
 Frames = None # the actual frame information
 
 def fillEditorWindow(window):
-	global canvas, lblImage, lblVertex
+	global canvas, lblImage, lblVertex, FrameName
 
 	window.title("Animation Editor")
+	window.bind("<Left>", btnPrevVertexClick)
+	window.bind("<Right>", btnNextVertexClick)
 
 	canvas = tk.Canvas(window)
 	canvas.grid(row=0, column=0, columnspan=7)
 	canvas.bind("<ButtonPress-1>", canvasDown)
+	canvas.config(width=700, height=700)
 
-	tk.Label(window, text="Image:").grid(row=1, column=0)
-	lblImage = Utils.MakeArrowButtons(window, 1, 1, btnPrevImageClick, btnNextImageClick)
+	tk.Entry(window, textvariable=FrameName).grid(row=1, column=1, columnspan=3)
+	btnSetFrameName = tk.Button(window, text="Set name")
+	btnSetFrameName.grid(row=1, column=4, columnspan=2)
+	btnSetFrameName.bind("<ButtonRelease-1>", btnSetFrameNameClick)
 
-	tk.Label(window, text="Vertex:").grid(row=2, column=0)
-	lblVertex = Utils.MakeArrowButtons(window, 2, 1, btnPrevVertexClick, btnNextVertexClick)
+	tk.Label(window, text="Image:").grid(row=2, column=0)
+	lblImage = Utils.MakeArrowButtons(window, 2, 1, btnPrevImageClick, btnNextImageClick)
+
+	tk.Label(window, text="Vertex:").grid(row=3, column=0)
+	lblVertex = Utils.MakeArrowButtons(window, 3, 1, btnPrevVertexClick, btnNextVertexClick)
 
 	btnSave = tk.Button(window, text="Save")
-	btnSave.grid(row=3, column=4)
+	btnSave.grid(row=4, column=4)
 	btnSave.bind("<ButtonRelease-1>", btnSaveClick)
 
 	updateData()
@@ -44,6 +53,10 @@ def completeFrameData(index):
 
 	for i in range(len(Frames[index]["vertices"]), len(Vertices)):
 		Frames[index]["vertices"].append(Vertices[i])
+
+def btnSetFrameNameClick(event):
+	global FrameName, CurrentFrame, Frames
+	Frames[CurrentFrame]["name"] = FrameName.get()
 
 def btnPrevImageClick(event):
 	global CurrentFrame
@@ -97,9 +110,10 @@ def btnSaveClick(event):
 	Utils.Save(FileName, ImageGlob, Vertices, Lines, Frames)
 
 def updateData():
-	global lblImage, lblVertex, CurrentFrame, CurrentVertex
-	lblImage["text"] = str(CurrentFrame)
-	lblVertex["text"] = str(CurrentVertex)
+	global lblImage, lblVertex, CurrentFrame, CurrentVertex, FrameName
+	lblImage["text"] = str(CurrentFrame) + " (" + str(Images[CurrentFrame]) + ")"
+	lblVertex["text"] = str(CurrentVertex) + " (" + str(Vertices[CurrentVertex]["name"]) + ")"
+	FrameName.set(Frames[CurrentFrame]["name"])
 
 def updateImage():
 	global canvas, Vertices, Lines, Frames, Images, CurrentFrame, CurrentVertex
@@ -107,10 +121,10 @@ def updateImage():
 	noSelection = -1
 	currentImage = Images[CurrentFrame]
 
-	Utils.UpdateImage(canvas, Frames[CurrentFrame]["vertices"], Lines, currentImage, CurrentVertex, noSelection)
+	Utils.UpdateImage(canvas, 0, 0, Frames[CurrentFrame]["vertices"], Lines, currentImage, CurrentVertex, noSelection)
 
 def OpenFromFile(window, filename):
-	global FileName, CurrentFrame, CurrentVertex, Images, ImageGlob, Vertices, Lines, Frames
+	global FrameName, FileName, CurrentFrame, CurrentVertex, Images, ImageGlob, Vertices, Lines, Frames
 
 	FileName = filename
 	CurrentVertex = 0
@@ -119,6 +133,8 @@ def OpenFromFile(window, filename):
 	f = open(filename)
 	data = json.load(f)
 	f.close()	
+
+	FrameName = tk.StringVar()
 
 	ImageGlob = data["imageGlob"]
 	Vertices = data["vertices"]
