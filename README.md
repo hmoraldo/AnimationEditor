@@ -10,5 +10,5 @@ Notes
 
 To run, execute "python MainMenu.py".
 
-This is a work in progress project. It is being used by the ![procedural locomotion project](https://github.com/hmoraldo/ProceduralLocomotion).
+This is a work in progress project. It is being used by the [procedural locomotion project](https://github.com/hmoraldo/ProceduralLocomotion).
 
