@@ -18,9 +18,9 @@ def MakeArrowButtons(window, row, col, leftHandler, rightHandler):
 	return lblVertex
 
 def UpdateImage(canvas, originX, originY, vertices, lines, currentImage, currentVertex, currentLine):
+	canvas.delete(tk.ALL)
 	if currentImage != None:
 		canvas.image = ImageTk.PhotoImage(Image.open(currentImage))
-		canvas.delete(tk.ALL)
 		canvas.create_image(-originX, -originY, image=canvas.image, anchor=tk.NW)
 
 	radius = 3
